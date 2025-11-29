@@ -1,0 +1,46 @@
+# Comandos listos para pegar en PowerShell (paso a paso)
+
+# 1) Preparar demo
+cd 'C:\Users\hurta\OneDrive\Escritorio\actividad1'
+mkdir git-recover-demo
+mkdir git-remote.git
+cd git-recover-demo
+git init
+cd ..\git-remote.git
+git init --bare
+cd ..\git-recover-demo
+git remote add origin '..\git-remote.git'
+
+# 2) Crear y subir C1 (simula publicado)
+Set-Content -Path README.md -Value "Servicio Nacional de Aprendizaje – SENA`nCentro de Tecnología de la Manufactura Avanzada – Regional Antioquia"
+git add README.md
+git commit -m "C1: Añadir README con datos de SENA"
+git branch -M main
+git push origin main
+
+# 3) Crear C2 (NO publicado)
+Add-Content -Path README.md -Value "`nCambio temporal: agregando línea para C2"
+git add README.md
+git commit -m "C2: Cambio temporal que todavía no se publica"
+# NO ejecutar git push
+
+# 4) Ver hash de C2 y reset hard (simular error)
+git log --oneline -n 5
+# copia el hash de C2 mostrado arriba (ej: a1b2c3d)
+git reset --hard HEAD~1
+
+# 5) Usar reflog para encontrar hash de C2
+git reflog --oneline
+# busca la entrada con mensaje 'C2: ...' y copia su hash
+
+# 6) Recuperar C2 con su hash
+git reset --hard <hash_de_C2>
+
+# 7) Volver a C1 manteniendo cambios en staging
+git reset --soft HEAD~1
+
+# 8) Añadir y enmendar C1
+git add .
+git commit --amend -m "C1: Mensaje corregido que incorpora cambios relevantes"
+# Si necesitas actualizar el remoto publicado:
+# git push --force origin main
